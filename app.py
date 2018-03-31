@@ -51,12 +51,16 @@ feature_dict = {}
 for i, item in enumerate(songs):
 	track_id = item['track']['id']
 	features = sp.audio_features(track_id)
+	feature_dict[i] = features
 	
-#print(json.dumps(feature_dict, sort_keys=True, indent=4))
 
+
+
+#print(json.dumps(feature_dict, sort_keys=True, indent=4))
 
 with open('data.txt', 'w') as outfile:  
     json.dump(feature_dict, outfile)
+   
 #print(json.dumps(VARIABLE, sort_keys=True, indent=4))
 
 
