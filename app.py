@@ -45,7 +45,19 @@ playlist_uri = user_playlists['items'][int(selected_playlist_number)]['uri']
 playlist_id = playlist_uri.split(':')[4]
 songs = sp.user_playlist(username, playlist_id)['tracks']['items']
 
+#Get unique country codes in playlist
+countries_in_playlist = {}
+for i, item in enumerate(songs):
+	for j in item['track']['available_markets']:
+		if j not in countries_in_playlist:
+			countries_in_playlist[j] = 1
 
+#output JSON with unique country codes
+with open('data.txt', 'w') as outfile:  
+    json.dump(countries_in_playlist, outfile)
+
+
+"""
 #Get feature vectors for each song
 feature_dict = {}
 for i, item in enumerate(songs):
@@ -56,11 +68,6 @@ for i, item in enumerate(songs):
 
 
 
-#print(json.dumps(feature_dict, sort_keys=True, indent=4))
-
-with open('data.txt', 'w') as outfile:  
-    json.dump(feature_dict, outfile)
-   
 #print(json.dumps(VARIABLE, sort_keys=True, indent=4))
 
 
