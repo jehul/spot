@@ -35,8 +35,16 @@ print()
 #Print Playlists
 print(">>>Here are your playlists!")
 user_playlists = sp.current_user_playlists(limit=50)
+
+
+
+playlists={}
 for i, item in enumerate(user_playlists['items']):
 	print("%d %s" %(i, item['name']))
+	playlists[item['name']] = 1
+
+with open('playlists.txt', 'w') as outfile:  
+    json.dump(playlists, outfile)
 
 selected_playlist_number = input('Select a playlist to analyze (playlist number):')
 
@@ -69,9 +77,14 @@ with open('playlist_features.txt', 'w') as outfile:
     json.dump(feature_dict, outfile)
 
 #Get feature vectors for a user's library
+"""
 if token:
 	library = sp.current_user_saved_tracks()
-	print(json.dumps(library, sort_keys=True, indent=4))
+	while library['next'] != None:
+		print(json.dumps(library, sort_keys=True, indent=4))
+		library = 
+
+"""
 
 #print(json.dumps(VARIABLE, sort_keys=True, indent=4))
 
