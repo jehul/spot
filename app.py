@@ -53,11 +53,11 @@ for i, item in enumerate(songs):
 			countries_in_playlist[j] = 1
 
 #output JSON with unique country codes
-with open('data.txt', 'w') as outfile:  
+with open('countries.txt', 'w') as outfile:  
     json.dump(countries_in_playlist, outfile)
 
 
-"""
+
 #Get feature vectors for each song
 feature_dict = {}
 for i, item in enumerate(songs):
@@ -65,8 +65,13 @@ for i, item in enumerate(songs):
 	features = sp.audio_features(track_id)
 	feature_dict[i] = features
 	
+with open('playlist_features.txt', 'w') as outfile:  
+    json.dump(feature_dict, outfile)
 
-
+#Get feature vectors for a user's library
+if token:
+	library = sp.current_user_saved_tracks()
+	print(json.dumps(library, sort_keys=True, indent=4))
 
 #print(json.dumps(VARIABLE, sort_keys=True, indent=4))
 
