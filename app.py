@@ -108,7 +108,7 @@ def get_feature_vectors(track_ids):
 	return feature_dict
 
 def create_json(feature_dict, name):
-	with open('library_features.txt', 'w') as outfile:  
+	with open(name, 'w') as outfile:  
 		json.dump(feature_dict, outfile)
 
 def main():
@@ -118,13 +118,14 @@ def main():
 
 	playlist_uri = user_playlists['items'][int(selected_playlist_number)]['uri']
 	playlist_id = playlist_uri.split(':')[4]
-	#playlist_track_ids, countries_in_playlist = get_track_ids(sp,  playlist_id, body="playlist", get_availability=True)
+	playlist_track_ids, countries_in_playlist = get_track_ids(sp,  playlist_id, body="playlist", get_availability=True)
 	
-	#create_json(countries_in_playlist, name="countries.txt")
+
+	create_json(countries_in_playlist, name="countries.txt")
 	
-	library_track_id, countries_in_library= get_track_ids(sp, playlist_id, body="library")
-	feature_dict = get_feature_vectors(library_track_id)
-	create_json(feature_dict, name="library_features.txt")
+	#library_track_id, countries_in_library= get_track_ids(sp, playlist_id, body="library")
+	#feature_dict = get_feature_vectors(library_track_id)
+	#create_json(feature_dict, name="library_features.txt")
 
 
 
