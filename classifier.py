@@ -5,6 +5,4 @@ import json
 
 data = json.load(open('playlist_features.txt'))
 
-print(data)
-
 
