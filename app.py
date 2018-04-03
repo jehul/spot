@@ -6,6 +6,7 @@ import webbrowser
 import spotipy.util as util
 #from json.decoder import JSONDecodeError
 
+###################### Authentication ###############################
 
 #Get username 1253897466
 username = sys.argv[1]
@@ -52,47 +53,50 @@ with open('playlists.txt', 'w') as outfile:
 
 
 
+############################## UTILITIES ###################################
+
 #get track ids of a body of music
-def get_track_ids(sp, playlist_id, body="playlist", get_availability=False):
-	library_feature_dict = {}
-	library_track_id = []
+def get_playlist_ids(sp, playlist_id, get_availability=False):
+	playlist_track_ids = []
 	countries_in_playlist = {}
-	
-	if body == "library":
-		library = sp.current_user_saved_tracks(limit=50)
 
-	else:
-		library = sp.user_playlist(username, playlist_id)
-		library_track_id.append(library['id'])
+	playlist = sp.user_playlist(username, playlist_id)
 
+	"""
 	if get_availability == True:
 		print("triggered")
 		for i, item in enumerate(library['tracks']['items']):
 			for j in item['track']['available_markets']:
 				if j not in countries_in_playlist.values():
 					countries_in_playlist[len(countries_in_playlist)] = j
-	
-	
-	
-	
-	if body == "playlist":
-		for item in library['tracks']['items']:
-			library_track_id.append(item['track']['id'])
-		while library['tracks']['next']:
-			library = sp.next(library)
-			for item in library['tracks']['items']:
-				library_track_id.append(item['track']['id'])
-	
-	if body == "library":
-		for item in library['items']:
-			library_track_id.append(item['track']['id'])
-		while library['next']:
-			library = sp.next(library)
-			for item in library['items']:
-				library_track_id.append(item['track']['id'])
-		
-	return library_track_id, countries_in_playlist
+	"""
 
+
+	
+	while True:  #do-while break if no more pages of tracks left
+		for track in playlist['tracks']['items']:
+			playlist_track_ids.append(track['track']['id']) #collect all track ids into list
+		if playlist['tracks']['next'] == None:
+			break
+
+		playlist = sp.next(playlist)                    #get next page of tracks
+
+	return playlist_track_ids
+
+def get_library_ids(sp):
+	library = sp.current_user_saved_tracks(limit=50)
+	library_track_ids = []
+	count = 0
+	while True:  #do-while break if no more pages of tracks left
+		for track in library['items']:
+			count += 1
+			library_track_ids.append(track['track']['id']) #collect all track ids into list
+		if library['next'] == None:
+			break
+		library = sp.next(library) 
+	
+	return library_track_ids
+	
 
 #get feature vector returns a dictionary of features
 def get_feature_vectors(track_ids):
@@ -111,28 +115,28 @@ def create_json(feature_dict, name):
 	with open(name, 'w') as outfile:  
 		json.dump(feature_dict, outfile)
 
+
+############################## MAIN ROUTINE #############################
 def main():
 	selected_playlist_number = input('Select a playlist to analyze (playlist number):')
-	
-
 
 	playlist_uri = user_playlists['items'][int(selected_playlist_number)]['uri']
 	playlist_id = playlist_uri.split(':')[4]
-	playlist_track_ids, countries_in_playlist = get_track_ids(sp,  playlist_id, body="playlist", get_availability=True)
+	playlist_track_ids = get_playlist_ids(sp,  playlist_id, get_availability=True)
 	
 
-	create_json(countries_in_playlist, name="countries.txt")
+	#create_json(countries_in_playlist, name="countries.txt")
 	
 	#library_track_id, countries_in_library= get_track_ids(sp, playlist_id, body="library")
-	#feature_dict = get_feature_vectors(library_track_id)
-	#create_json(feature_dict, name="library_features.txt")
+	library_track_id = get_library_ids(sp)
+	feature_dict = get_feature_vectors(library_track_id)
+	create_json(feature_dict, name="library_features.txt")
 
 
 
 
 
 #print(json.dumps(VARIABLE, sort_keys=True, indent=4))
-
 
 
 if __name__ == '__main__':
